@@ -1,7 +1,6 @@
 package com.augusto.soloveganbusiness.mappers;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.augusto.soloveganbusiness.dto.UserDto;
@@ -17,9 +16,15 @@ public class UserMapper implements IMapper<UserDto, User> {
     }
 
     @Override
-    public User map(UserDto userDto) {
-        User userEntity = modelMapper.map(userDto, User.class);
-        return userEntity;
+    public User mapEntity(UserDto userDto) {
+        User user = modelMapper.map(userDto, User.class);
+        return user;
+    }
+
+    @Override
+    public UserDto mapDto(User user) {
+        UserDto userDto = modelMapper.map(user, UserDto.class);
+        return userDto;
     }
 
 }

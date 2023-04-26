@@ -1,5 +1,7 @@
 package com.augusto.soloveganbusiness.controllers;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,17 +18,13 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("")
-public class HomeController {
+public class UsersController {
     private final UserService userService;
 
-    @GetMapping("/greeting")
-    public ResponseEntity<String> sayHello() {
-        return ResponseEntity.ok("Hola Spring Security");
-    }
-
-    @GetMapping("/goodbye")
-    public ResponseEntity<String> sayGoodBye() {
-        return ResponseEntity.ok("Chao Spring Security");
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.findAll();
+        return ResponseEntity.ok(users);
     }
 
     @PostMapping("/create/users")

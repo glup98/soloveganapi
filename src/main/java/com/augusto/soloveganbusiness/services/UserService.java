@@ -1,7 +1,6 @@
 package com.augusto.soloveganbusiness.services;
 
 import org.mindrot.jbcrypt.BCrypt;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.augusto.soloveganbusiness.dto.UserDto;
@@ -20,7 +19,6 @@ public class UserService extends BaseService<User> {
         this.userMapper = userMapper;
     }
 
-    // Registrar el User y hacer Hash a su password
     public User registerUser(UserDto userDto) {
         User user = userMapper.map(userDto);
         String hashed = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
