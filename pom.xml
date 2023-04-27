@@ -12,7 +12,7 @@
 	<artifactId>soloveganbusiness</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>soloveganbusiness</name>
+	<name>soloveganbusinessapi</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>

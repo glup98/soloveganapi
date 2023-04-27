@@ -1,7 +1,7 @@
 package com.augusto.soloveganbusiness.mappers;
 
-public interface IMapper<I, O> {
-    public O mapEntity(I in);
+public interface IMapper<D, E> {
+    D toDto(E entity);
 
-    public I mapDto(O in);
+    E toEntity(D dto);
 }

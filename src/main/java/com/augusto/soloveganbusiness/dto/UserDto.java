@@ -5,10 +5,14 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
-public class UserDto {
+@NoArgsConstructor
+@Getter
+@Setter
+public class UserDto extends BaseDto {
     @NotNull
     @NotBlank(message = "Este campo no puede estar en blanco.")
     @Size(min = 3, max = 30, message = "El nombre debe tener entre 3 y 30 caracteres")

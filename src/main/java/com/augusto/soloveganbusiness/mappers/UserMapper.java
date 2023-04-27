@@ -16,15 +16,14 @@ public class UserMapper implements IMapper<UserDto, User> {
     }
 
     @Override
-    public User mapEntity(UserDto userDto) {
+    public User toEntity(UserDto userDto) {
         User user = modelMapper.map(userDto, User.class);
         return user;
     }
 
     @Override
-    public UserDto mapDto(User user) {
+    public UserDto toDto(User user) {
         UserDto userDto = modelMapper.map(user, UserDto.class);
         return userDto;
     }
-
 }
