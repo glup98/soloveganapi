@@ -1,7 +1,5 @@
 package com.augusto.soloveganbusiness.models;
 
-import java.util.Optional;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
