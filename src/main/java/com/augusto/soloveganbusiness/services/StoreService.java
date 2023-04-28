@@ -1,6 +1,9 @@
 package com.augusto.soloveganbusiness.services;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
@@ -9,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.augusto.soloveganbusiness.dto.StoreDto;
 import com.augusto.soloveganbusiness.exceptions.EntityAlreadyExistsException;
+import com.augusto.soloveganbusiness.exceptions.ResourceConflictException;
+import com.augusto.soloveganbusiness.exceptions.ResourceNotFoundException;
 import com.augusto.soloveganbusiness.mappers.StoreMapper;
 import com.augusto.soloveganbusiness.models.Store;
 import com.augusto.soloveganbusiness.models.User;
@@ -28,13 +33,6 @@ public class StoreService extends BaseService<StoreDto, Store> {
         this.userRepository = userRepository;
     }
 
-    public Store setUserToStore(Store store, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        store.setUser(user);
-        return store;
-    }
-
     @Transactional
     public StoreDto createStore(StoreDto storeDto, Long userId) {
         if (storeRepository.existsByName(storeDto.getName())) {
@@ -45,4 +43,40 @@ public class StoreService extends BaseService<StoreDto, Store> {
         Store savedStore = storeRepository.save(store);
         return storeMapper.toDto(savedStore);
     }
+
+    public StoreDto updateStore(Long id, StoreDto storeDto) {
+        String newName = storeDto.getName();
+        Store store = storeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Store not found for this id :: " + id));
+        if (!store.getName().equals(newName)) { // El nombre de la tienda ha cambiado
+            validateStoreName(newName); // Validar que no exista otra tienda con el mismo nombre
+            store.setName(newName); // Actualizar el nombre de la tienda
+        }
+        // Actualizar otros campos necesarios de la tienda
+        storeRepository.save(store);
+        return storeMapper.toDto(store);
+    }
+
+    public Store setUserToStore(Store store, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        store.setUser(user);
+        return store;
+    }
+
+    public List<StoreDto> findAllByUser(Long userId) {
+        List<Store> storesByUser = storeRepository.findByUserId(userId);
+        if (storesByUser == null) {
+            return Collections.emptyList(); // Devuelve una lista vacía si el resultado del repositorio es nulo
+        } else {
+            return convertToDtoList(storesByUser);
+        }
+    }
+
+    public void validateStoreName(String name) {
+        if (storeRepository.existsByName(name)) {
+            throw new ResourceConflictException("Ya existe una tienda con el nombre " + name);
+        }
+    }
+
 }

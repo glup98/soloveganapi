@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.augusto.soloveganbusiness.dto.BaseDto;
+import com.augusto.soloveganbusiness.exceptions.ResourceNotFoundException;
 import com.augusto.soloveganbusiness.mappers.IMapper;
 import com.augusto.soloveganbusiness.repositories.BaseRepository;
 
@@ -20,17 +21,13 @@ public abstract class BaseService<D extends BaseDto, E> {
 
     public D findById(Long id) {
         Optional<E> optional = baseRepository.findById(id);
-        if (optional.isPresent()) {
-            return mapper.toDto(optional.get());
-        } else {
-            return null;
-        }
+        E entity = optional.orElseThrow(() -> new ResourceNotFoundException("Resource not found with id: " + id));
+        return mapper.toDto(entity);
     }
 
     public List<D> findAll() {
-        return baseRepository.findAll().stream()
-                .map(mapper::toDto)
-                .collect(Collectors.toList());
+        List<E> entities = baseRepository.findAll();
+        return convertToDtoList(entities);
     }
 
     public D save(D dto) {
@@ -38,4 +35,11 @@ public abstract class BaseService<D extends BaseDto, E> {
         entity = baseRepository.save(entity);
         return mapper.toDto(entity);
     }
+
+    public List<D> convertToDtoList(List<E> entityList) {
+        return entityList.stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+    }
+
 }
