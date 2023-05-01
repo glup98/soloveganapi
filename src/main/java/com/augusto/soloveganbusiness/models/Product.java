@@ -30,6 +30,7 @@ public class Product extends BaseModel {
     @Size(min = 5, max = 1000, message = "Descripción no puede tener menos de 5 caracteres")
     private String description;
 
+    private String imgUrl;
     private String imgRoute;
 
     private String portionValue;

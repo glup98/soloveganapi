@@ -1,5 +1,6 @@
 package com.augusto.soloveganbusiness.controllers;
 
+import java.net.URI;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.augusto.soloveganbusiness.dto.StoreDto;
 import com.augusto.soloveganbusiness.services.StoreService;
@@ -29,8 +31,10 @@ public class StoreController {
     @PostMapping("/create/{userId}/stores")
     public ResponseEntity<StoreDto> createStore(@Valid @RequestBody StoreDto storeDto,
             @PathVariable(value = "userId") Long userId) {
-        StoreDto savedStoreDto = storeService.createStore(storeDto, userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedStoreDto);
+        StoreDto createdStoreDto = storeService.createStore(storeDto, userId);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{productId}")
+                .buildAndExpand(createdStoreDto.getId()).toUri();
+        return ResponseEntity.created(location).body(createdStoreDto);
     }
 
     @GetMapping("/stores/{storeId}")
@@ -43,7 +47,8 @@ public class StoreController {
     public ResponseEntity<StoreDto> updateStore(@PathVariable(value = "storeId") Long storeId,
             @RequestBody StoreDto storeDto) {
         StoreDto updatedStoreDto = storeService.updateStore(storeId, storeDto);
-        return ResponseEntity.ok(updatedStoreDto);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
+        return ResponseEntity.created(location).body(updatedStoreDto);
     }
 
     @GetMapping("/{userId}/stores")

@@ -2,10 +2,7 @@ package com.augusto.soloveganbusiness.services;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
@@ -44,10 +41,10 @@ public class StoreService extends BaseService<StoreDto, Store> {
         return storeMapper.toDto(savedStore);
     }
 
-    public StoreDto updateStore(Long id, StoreDto storeDto) {
+    public StoreDto updateStore(Long storeId, StoreDto storeDto) {
         String newName = storeDto.getName();
-        Store store = storeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Store not found for this id :: " + id));
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Store not found for this id :: " + storeId));
         if (!store.getName().equals(newName)) { // El nombre de la tienda ha cambiado
             validateStoreName(newName); // Validar que no exista otra tienda con el mismo nombre
             store.setName(newName); // Actualizar el nombre de la tienda
