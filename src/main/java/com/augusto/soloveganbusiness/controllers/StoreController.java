@@ -5,7 +5,9 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,10 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.augusto.soloveganbusiness.dto.StoreDto;
+import com.augusto.soloveganbusiness.models.Store;
 import com.augusto.soloveganbusiness.services.StoreService;
 
 import lombok.RequiredArgsConstructor;
@@ -51,21 +55,29 @@ public class StoreController {
         return ResponseEntity.created(location).body(updatedStoreDto);
     }
 
-    @GetMapping("/{userId}/stores")
-    public ResponseEntity<List<StoreDto>> getAllStoresByUser(@PathVariable(value = "userId") Long userId) {
-        List<StoreDto> storesDto = storeService.findAllByUser(userId);
-        if (storesDto.isEmpty()) {
-            // Devuelve un código 404 si no se encuentra ninguna tienda para
-            // el usuario
-            return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(storesDto);
-        }
+    @GetMapping("/stores")
+    public ResponseEntity<Page<StoreDto>> getAllStores(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<StoreDto> storesPage = storeService.findAll(pageable);
+        System.out.println(storesPage);
+        return ResponseEntity.ok().body(storesPage);
     }
 
-    @GetMapping("/stores")
-    public ResponseEntity<List<StoreDto>> getAllStores() {
-        List<StoreDto> storesDto = storeService.findAll();
-        return ResponseEntity.ok(storesDto);
+    @GetMapping("/{userId}/stores")
+    public ResponseEntity<Page<Store>> getAllStoresByUser(
+            @PathVariable(value = "userId") Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Store> storesPage = storeService.findAllByUser(userId, pageable);
+        return ResponseEntity.ok().body(storesPage);
+    }
+
+    @GetMapping("/{userId}/entitystores")
+    public ResponseEntity<List<StoreDto>> getAllStoresByUser(
+            @PathVariable(value = "userId") Long userId) {
+        List<StoreDto> storesPage = storeService.findAllByUserEntity(userId);
+        return ResponseEntity.ok().body(storesPage);
     }
 }

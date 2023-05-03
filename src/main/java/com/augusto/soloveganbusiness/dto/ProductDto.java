@@ -23,5 +23,5 @@ public class ProductDto extends BaseDto {
     private String imgUrl;
     private String imgRoute;
 
-    private String portionValue;
+    private Long portionValue;
 }

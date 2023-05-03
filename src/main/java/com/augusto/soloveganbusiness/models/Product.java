@@ -8,6 +8,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.persistence.JoinColumn;
 
@@ -30,10 +31,11 @@ public class Product extends BaseModel {
     @Size(min = 5, max = 1000, message = "Descripción no puede tener menos de 5 caracteres")
     private String description;
 
+    @NotNull
     private String imgUrl;
     private String imgRoute;
 
-    private String portionValue;
+    private Long portionValue;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "favorite_products", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
@@ -52,10 +54,11 @@ public class Product extends BaseModel {
     private List<Category> categories;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "stores_has_products", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "store_id"))
+    @JoinTable(name = "prices", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "store_id"))
     private List<Store> stores;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "quantities", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "nutritional_information_id"))
     private List<NutritionalInformation> nutritionalInformation;
+
 }

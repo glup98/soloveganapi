@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import com.augusto.soloveganbusiness.dto.PriceDto;
 import com.augusto.soloveganbusiness.models.Price;
-import com.augusto.soloveganbusiness.models.Price;
 
 import lombok.RequiredArgsConstructor;
 

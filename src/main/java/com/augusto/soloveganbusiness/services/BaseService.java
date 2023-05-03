@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.augusto.soloveganbusiness.dto.BaseDto;
@@ -25,9 +27,9 @@ public abstract class BaseService<D extends BaseDto, E> {
         return mapper.toDto(entity);
     }
 
-    public List<D> findAll() {
-        List<E> entities = baseRepository.findAll();
-        return convertToDtoList(entities);
+    public Page<D> findAll(Pageable pageable) {
+        Page<E> entityPage = baseRepository.findAll(pageable);
+        return entityPage.map(mapper::toDto);
     }
 
     public D save(D dto) {
@@ -41,5 +43,4 @@ public abstract class BaseService<D extends BaseDto, E> {
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
-
 }

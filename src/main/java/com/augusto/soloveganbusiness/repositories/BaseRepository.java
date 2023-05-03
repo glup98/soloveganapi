@@ -2,10 +2,10 @@ package com.augusto.soloveganbusiness.repositories;
 
 import java.util.List;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
-public interface BaseRepository<T> extends CrudRepository<T, Long> {
-    List<T> findAll();
+public interface BaseRepository<T> extends JpaRepository<T, Long> {
+
 }

@@ -1,10 +1,11 @@
 package com.augusto.soloveganbusiness.services;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.augusto.soloveganbusiness.dto.StoreDto;
@@ -61,13 +62,17 @@ public class StoreService extends BaseService<StoreDto, Store> {
         return store;
     }
 
-    public List<StoreDto> findAllByUser(Long userId) {
-        List<Store> storesByUser = storeRepository.findByUserId(userId);
-        if (storesByUser == null) {
-            return Collections.emptyList(); // Devuelve una lista vacía si el resultado del repositorio es nulo
-        } else {
-            return convertToDtoList(storesByUser);
-        }
+    public Page<Store> findAllByUser(Long userId, Pageable pageable) {
+        Page<Store> storesByUser = storeRepository.findByUserId(userId, pageable);
+        System.out.println(storesByUser);
+        return storesByUser;
+    }
+
+    public List<StoreDto> findAllByUserEntity(Long userId) {
+        List<Store> storesByUser = storeRepository.findByUserIdEntity(userId);
+        List<StoreDto> storeDtos = convertToDtoList(storesByUser);
+        System.out.println(storesByUser);
+        return storeDtos;
     }
 
     public void validateStoreName(String name) {
