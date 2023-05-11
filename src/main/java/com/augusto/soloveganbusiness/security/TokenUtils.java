@@ -25,6 +25,5 @@ public class TokenUtils {
                 .addClaims(extra)
                 .signWith(SignatureAlgorithm.HS512, Keys.hmacShaKeyFor(ACCESS_TOKEN_SECRET.getBytes()))
                 .compact();
-
     }
 }

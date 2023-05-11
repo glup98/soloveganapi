@@ -1,5 +1,8 @@
 package com.augusto.soloveganbusiness.services;
 
+import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
+
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
@@ -20,18 +23,17 @@ public class UserService extends BaseService<UserDto, User> {
         this.userMapper = userMapper;
     }
 
+    @Transactional
     public UserDto registerUser(UserDto userDto) {
         // Validar si el usuario ya existe en la base de datos
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
             throw new EntityAlreadyExistsException("El email ya existe");
         }
-
         // Hashear la contraseña y guardar el usuario en la base de datos
         String hashedPassword = BCrypt.hashpw(userDto.getPassword(), BCrypt.gensalt());
         userDto.setPassword(hashedPassword);
         User user = userMapper.toEntity(userDto);
         User savedUser = userRepository.save(user);
-
         return userMapper.toDto(savedUser);
     }
 }

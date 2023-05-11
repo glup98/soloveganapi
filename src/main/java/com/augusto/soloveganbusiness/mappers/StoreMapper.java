@@ -6,14 +6,13 @@ import org.springframework.stereotype.Component;
 import com.augusto.soloveganbusiness.dto.StoreDto;
 import com.augusto.soloveganbusiness.models.Store;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class StoreMapper implements IMapper<StoreDto, Store> {
 
     private final ModelMapper modelMapper;
-
-    public StoreMapper(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
-    }
 
     @Override
     public Store toEntity(StoreDto storeDto) {
