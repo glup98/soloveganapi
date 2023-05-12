@@ -73,6 +73,15 @@ public class ProductController {
         return ResponseEntity.created(location).body(createdProductDto);
     }
 
+    @PutMapping("/products/{productId}/{storeId}")
+    public ResponseEntity<ProductDto> updateProducts(@PathVariable(value = "productId") Long productId,
+            @RequestBody ProductRequestDto productRequestDto,
+            @PathVariable Long storeId) {
+        ProductDto updatedProductDto = productService.updateProduct(productId, productRequestDto, storeId);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
+        return ResponseEntity.created(location).body(updatedProductDto);
+    }
+
     @GetMapping("/products/{productId}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable Long productId) {
         ProductDto productDto = productService.findById(productId);
@@ -85,14 +94,6 @@ public class ProductController {
         Pageable pageable = PageRequest.of(page, size);
         Page<ProductDto> productPage = productService.findAll(pageable);
         return ResponseEntity.ok().body(productPage);
-    }
-
-    @PutMapping("/products/{productId}")
-    public ResponseEntity<ProductDto> updateProducts(@PathVariable(value = "productId") Long productId,
-            @RequestBody ProductDto productDto) {
-        ProductDto updatedProductDto = productService.updateProduct(productId, productDto);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
-        return ResponseEntity.created(location).body(updatedProductDto);
     }
 
     @GetMapping("/products/user/{userId}")

@@ -49,6 +49,23 @@ public class ProductService extends BaseService<ProductDto, Product> {
         return productMapper.toDto(product);
     }
 
+    public ProductDto updateProduct(Long productId, ProductRequestDto productRequestDto, Long storeId) {
+        String newName = productRequestDto.getProductDto().getName();
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Store not found for this id :: " + productId));
+        if (!product.getName().equals(newName)) { // El nombre del producto ha cambiado
+            validateProductName(newName); // Validar que no exista otro producto con el mismo nombre
+            // Actualizar el producto
+            product.setName(newName);
+            product.setDescription(productRequestDto.getProductDto().getDescription());
+            product.setPortionValue(productRequestDto.getProductDto().getPortionValue());
+        }
+        // Actualizar otros campos necesarios de la tienda
+        productRepository.save(product);
+        priceService.addProductAndStoreToPrice(productRequestDto.getPriceDto(), storeId, product);
+        return productMapper.toDto(product);
+    }
+
     public List<ProductDto> getProductsByUserId(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found for this id :: " + userId));
@@ -61,21 +78,6 @@ public class ProductService extends BaseService<ProductDto, Product> {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found for this id :: " + storeId));
         List<Product> products = productRepository.findByStoresContaining(store);
         return convertToDtoList(products);
-    }
-
-    public ProductDto updateProduct(Long productId, ProductDto productDto) {
-        String newName = productDto.getName();
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Store not found for this id :: " + productId));
-        if (!product.getName().equals(newName)) { // El nombre del producto ha cambiado
-            validateProductName(newName); // Validar que no exista otro producto con el mismo nombre
-            product.setName(newName); // Actualizar el producto
-            product.setDescription(productDto.getDescription());
-            product.setPortionValue(productDto.getPortionValue());
-        }
-        // Actualizar otros campos necesarios de la tienda
-        productRepository.save(product);
-        return productMapper.toDto(product);
     }
 
     public void validateProductName(String name) {
