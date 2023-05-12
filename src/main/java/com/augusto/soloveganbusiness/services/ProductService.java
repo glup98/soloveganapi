@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.augusto.soloveganbusiness.dto.ProductDto;
 import com.augusto.soloveganbusiness.dto.ProductRequestDto;
 import com.augusto.soloveganbusiness.exceptions.EntityAlreadyExistsException;
+import com.augusto.soloveganbusiness.exceptions.ResourceConflictException;
 import com.augusto.soloveganbusiness.exceptions.ResourceNotFoundException;
 import com.augusto.soloveganbusiness.mappers.ProductMapper;
 import com.augusto.soloveganbusiness.models.Product;
@@ -60,5 +61,26 @@ public class ProductService extends BaseService<ProductDto, Product> {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found for this id :: " + storeId));
         List<Product> products = productRepository.findByStoresContaining(store);
         return convertToDtoList(products);
+    }
+
+    public ProductDto updateProduct(Long productId, ProductDto productDto) {
+        String newName = productDto.getName();
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Store not found for this id :: " + productId));
+        if (!product.getName().equals(newName)) { // El nombre del producto ha cambiado
+            validateProductName(newName); // Validar que no exista otro producto con el mismo nombre
+            product.setName(newName); // Actualizar el producto
+            product.setDescription(productDto.getDescription());
+            product.setPortionValue(productDto.getPortionValue());
+        }
+        // Actualizar otros campos necesarios de la tienda
+        productRepository.save(product);
+        return productMapper.toDto(product);
+    }
+
+    public void validateProductName(String name) {
+        if (productRepository.existsByName(name)) {
+            throw new ResourceConflictException("Ya existe un producto con el nombre " + name);
+        }
     }
 }
