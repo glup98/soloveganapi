@@ -1,5 +1,6 @@
 package com.augusto.soloveganbusiness.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -25,5 +26,5 @@ public class Ingredient extends BaseModel {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "products_has_ingredients", joinColumns = @JoinColumn(name = "ingredient_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
-    private List<Product> products;
+    private List<Product> products = new ArrayList<>();
 }

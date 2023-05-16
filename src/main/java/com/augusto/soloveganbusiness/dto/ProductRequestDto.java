@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 public class ProductRequestDto {
     private ProductDto productDto;
-
+    private String ingredients;
     private PriceDto priceDto;
-
 }

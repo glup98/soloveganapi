@@ -25,17 +25,20 @@ public class ProductService extends BaseService<ProductDto, Product> {
     private final StoreRepository storeRepository;
     private final ProductMapper productMapper;
     private final PriceService priceService;
+    private final IngredientService ingredientService;
 
     public ProductService(ProductRepository productRepository, UserRepository userRepository,
             StoreRepository storeRepository,
             ProductMapper productMapper,
-            PriceService priceService) {
+            PriceService priceService,
+            IngredientService ingredientService) {
         super(productRepository, productMapper);
         this.productRepository = productRepository;
         this.userRepository = userRepository;
         this.productMapper = productMapper;
         this.storeRepository = storeRepository;
         this.priceService = priceService;
+        this.ingredientService = ingredientService;
     }
 
     public ProductDto createProduct(ProductRequestDto productRequestDto, Long storeId) {
@@ -46,6 +49,8 @@ public class ProductService extends BaseService<ProductDto, Product> {
         Product product = productMapper.toEntity(productDtoReceived);
         productRepository.save(product);
         priceService.addProductAndStoreToPrice(productRequestDto.getPriceDto(), storeId, product);
+        // Crear los ingredientes y vincularlos con el producto
+        ingredientService.createIngredients(productRequestDto.getIngredients(), product);
         return productMapper.toDto(product);
     }
 

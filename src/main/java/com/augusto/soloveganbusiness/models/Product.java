@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -39,27 +40,26 @@ public class Product extends BaseModel {
     private Long portionValue;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "favorite_products", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private List<User> users;
+    @JoinTable(name = "products_has_ingredients", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
+    private List<Ingredient> ingredients;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "quantities", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "nutritional_information_id"))
+    private List<NutritionalInformation> nutritionalInformation;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "products_has_certificates", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "certificate_id"))
     private List<Certificate> certificates;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "products_has_ingredients", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
-    private List<Ingredient> ingredients;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "categories_has_products", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private List<Category> categories;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "prices", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "store_id"))
     private List<Store> stores;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "quantities", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "nutritional_information_id"))
-    private List<NutritionalInformation> nutritionalInformation;
-
+    @JoinTable(name = "favorite_products", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<User> users;
 }
