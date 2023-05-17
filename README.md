@@ -1,6 +1,6 @@
-# API de Simulación de Check-in para Andes Airlines 🛫
+# API SoloVegan 🥦
 
-Bienvenido al repositorio de la API de Simulación de Check-in para Andes Airlines. Esta API fue desarrollada utilizando Java y Spring Boot, con el objetivo de simular el proceso de check-in de pasajeros en vuelos de Andes Airlines.
+Bienvenido al repositorio de la API de SoloVegan, la pagina de coomparacion de productos veganos.
 
 ## Tabla de contenidos
 
@@ -13,12 +13,11 @@ Bienvenido al repositorio de la API de Simulación de Check-in para Andes Airlin
 
 ## Características ✨
 
-- Check-in automático de pasajeros en vuelos de Andes Airlines
-- Asignación de asientos teniendo en cuenta las restricciones de edad y clase
-- Consulta de vuelos y pasajeros a través de un único endpoint
-- Documentación descriptiva en el código fuente
-- Documentación de la API utilizando Swagger
-- Uso de Git como control de versiones
+- Creacion de usuarios consumidores y admins
+- Registro de tiendas
+- Registo de Productos
+- Comparacion de produtos
+- Filtrado por preferecias
 
 ## Tecnologías Utilizadas 👨‍💻:
 
@@ -33,29 +32,11 @@ Bienvenido al repositorio de la API de Simulación de Check-in para Andes Airlin
 
 ## Uso de la API 🌐
 
-La API es accesible a través de una URL pública:
-
-https://andescheckinapi.up.railway.app/
-
-Para obtener información sobre un vuelo y sus pasajeros, realiza una solicitud GET al siguiente endpoint:
-
-GET https://andescheckinapi.up.railway.app/flights/:id/passengers
-
-Reemplaza `:id` con el ID del vuelo.
-
-Puedes acceder a la API a través del navegador, utilizando Postman, o a través de la documentación de Swagger.
+La API aun no es es accesible a través de una URL pública.
 
 ## Documentación 📖
 
-Puedes encontrar la documentación de la API generada con Swagger en la siguiente URL:
-
-https://andescheckinapi.up.railway.app/swagger-ui.html
-
-Además, se incluye documentación descriptiva en el código fuente para facilitar la comprensión del proyecto.
-
-## Agradecimientos 🙏
-
-Un agradecimiento especial a Bsale por permitirme participar en el proceso de selección y brindarme la oportunidad de contribuir a este emocionante proyecto.
+La API aun no posse documentacion.
 
 ## ¿Quieres saber más de mí?
 
