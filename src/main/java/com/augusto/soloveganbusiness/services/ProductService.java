@@ -54,35 +54,58 @@ public class ProductService extends BaseService<ProductDto, Product> {
     }
 
     public ProductDto createProduct(ProductRequestDto productRequestDto, Long storeId) {
-        ProductDto productDtoReceived = productRequestDto.getProductDto();
-        if (productRepository.existsByName(productDtoReceived.getName())) {
+        // Se valida si el producto ya existe.
+        validateProductRequest(productRequestDto);
+        // Crear y guardar el nuevo producto
+        Product product = createNewProduct(productRequestDto);
+        // Procesar y agregar la información nutricional al producto
+        processNutritionalInformation(product, productRequestDto);
+        // Fijar el precio del producto
+        processPricing(product, productRequestDto, storeId);
+        // Añadir los ingredientes al producto.
+        processIngredients(product, productRequestDto);
+        return productMapper.toDto(product);
+    }
+
+    private void validateProductRequest(ProductRequestDto productRequestDto) {
+        ProductDto productDto = productRequestDto.getProductDto();
+        if (productRepository.existsByName(productDto.getName())) {
             throw new EntityAlreadyExistsException("El producto ya existe");
         }
-        Product product = productMapper.toEntity(productDtoReceived);
-        productRepository.save(product);
+    }
 
+    private Product createNewProduct(ProductRequestDto productRequestDto) {
+        ProductDto productDtoReceived = productRequestDto.getProductDto();
+        Product product = productMapper.toEntity(productDtoReceived);
+        saveProduct(product);
+        return product;
+    }
+
+    private void processNutritionalInformation(Product product, ProductRequestDto productRequestDto) {
+        // Procesar cada información nutricional en la solicitud
         List<NutritionalInformationRequestDto> nutritionalInformationRequestDtos = productRequestDto
                 .getNutritionalInformations();
-
         for (NutritionalInformationRequestDto nutritionalInformationRequestDto : nutritionalInformationRequestDtos) {
             NutritionalInformationDto nutritionalInformationDto = new NutritionalInformationDto();
             nutritionalInformationDto.setDescription(nutritionalInformationRequestDto.getDescription());
-
             NutritionalInformation nutritionalInformation = nutritionalInformationService
                     .createOrGetNutritionalInformation(nutritionalInformationDto);
-
+            // Crear y agregar cada cantidad a la entidad de información nutricional
             for (QuantityDto quantityDto : nutritionalInformationRequestDto.getQuantities()) {
                 Quantity quantity = quantityService.createQuantity(quantityDto, product, nutritionalInformation);
                 nutritionalInformation.getQuantities().add(quantity);
             }
+            // Agregar la entidad de información nutricional al producto
             getNutritionalInformationForProduct(product).add(nutritionalInformation);
         }
+    }
 
+    private void processPricing(Product product, ProductRequestDto productRequestDto, Long storeId) {
         priceService.addProductAndStoreToPrice(productRequestDto.getPriceDto(), storeId, product);
-        // Crear los ingredientes y vincularlos con el producto
-        ingredientService.createIngredients(productRequestDto.getIngredients(), product);
+    }
 
-        return productMapper.toDto(product);
+    private void processIngredients(Product product, ProductRequestDto productRequestDto) {
+        ingredientService.createIngredients(productRequestDto.getIngredients(), product);
     }
 
     public List<NutritionalInformation> getNutritionalInformationForProduct(Product product) {
@@ -91,6 +114,10 @@ public class ProductService extends BaseService<ProductDto, Product> {
             nutritionalInformationList.add(quantity.getNutritionalInformation());
         }
         return nutritionalInformationList;
+    }
+
+    public Product saveProduct(Product product) {
+        return productRepository.save(product);
     }
 
     public ProductDto updateProduct(Long productId, ProductRequestDto productRequestDto, Long storeId) {
