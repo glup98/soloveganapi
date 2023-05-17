@@ -1,16 +1,22 @@
 package com.augusto.soloveganbusiness.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.augusto.soloveganbusiness.dto.NutritionalInformationDto;
+import com.augusto.soloveganbusiness.dto.NutritionalInformationRequestDto;
 import com.augusto.soloveganbusiness.dto.ProductDto;
 import com.augusto.soloveganbusiness.dto.ProductRequestDto;
+import com.augusto.soloveganbusiness.dto.QuantityDto;
 import com.augusto.soloveganbusiness.exceptions.EntityAlreadyExistsException;
 import com.augusto.soloveganbusiness.exceptions.ResourceConflictException;
 import com.augusto.soloveganbusiness.exceptions.ResourceNotFoundException;
 import com.augusto.soloveganbusiness.mappers.ProductMapper;
+import com.augusto.soloveganbusiness.models.NutritionalInformation;
 import com.augusto.soloveganbusiness.models.Product;
+import com.augusto.soloveganbusiness.models.Quantity;
 import com.augusto.soloveganbusiness.models.Store;
 import com.augusto.soloveganbusiness.models.User;
 import com.augusto.soloveganbusiness.repositories.ProductRepository;
@@ -26,12 +32,16 @@ public class ProductService extends BaseService<ProductDto, Product> {
     private final ProductMapper productMapper;
     private final PriceService priceService;
     private final IngredientService ingredientService;
+    private final QuantityService quantityService;
+    private final NutritionalInformationService nutritionalInformationService;
 
     public ProductService(ProductRepository productRepository, UserRepository userRepository,
             StoreRepository storeRepository,
             ProductMapper productMapper,
             PriceService priceService,
-            IngredientService ingredientService) {
+            IngredientService ingredientService,
+            QuantityService quantityService,
+            NutritionalInformationService nutritionalInformationService) {
         super(productRepository, productMapper);
         this.productRepository = productRepository;
         this.userRepository = userRepository;
@@ -39,6 +49,8 @@ public class ProductService extends BaseService<ProductDto, Product> {
         this.storeRepository = storeRepository;
         this.priceService = priceService;
         this.ingredientService = ingredientService;
+        this.quantityService = quantityService;
+        this.nutritionalInformationService = nutritionalInformationService;
     }
 
     public ProductDto createProduct(ProductRequestDto productRequestDto, Long storeId) {
@@ -48,10 +60,37 @@ public class ProductService extends BaseService<ProductDto, Product> {
         }
         Product product = productMapper.toEntity(productDtoReceived);
         productRepository.save(product);
+
+        List<NutritionalInformationRequestDto> nutritionalInformationRequestDtos = productRequestDto
+                .getNutritionalInformations();
+
+        for (NutritionalInformationRequestDto nutritionalInformationRequestDto : nutritionalInformationRequestDtos) {
+            NutritionalInformationDto nutritionalInformationDto = new NutritionalInformationDto();
+            nutritionalInformationDto.setDescription(nutritionalInformationRequestDto.getDescription());
+
+            NutritionalInformation nutritionalInformation = nutritionalInformationService
+                    .createOrGetNutritionalInformation(nutritionalInformationDto);
+
+            for (QuantityDto quantityDto : nutritionalInformationRequestDto.getQuantities()) {
+                Quantity quantity = quantityService.createQuantity(quantityDto, product, nutritionalInformation);
+                nutritionalInformation.getQuantities().add(quantity);
+            }
+            getNutritionalInformationForProduct(product).add(nutritionalInformation);
+        }
+
         priceService.addProductAndStoreToPrice(productRequestDto.getPriceDto(), storeId, product);
         // Crear los ingredientes y vincularlos con el producto
         ingredientService.createIngredients(productRequestDto.getIngredients(), product);
+
         return productMapper.toDto(product);
+    }
+
+    public List<NutritionalInformation> getNutritionalInformationForProduct(Product product) {
+        List<NutritionalInformation> nutritionalInformationList = new ArrayList<>();
+        for (Quantity quantity : product.getQuantities()) {
+            nutritionalInformationList.add(quantity.getNutritionalInformation());
+        }
+        return nutritionalInformationList;
     }
 
     public ProductDto updateProduct(Long productId, ProductRequestDto productRequestDto, Long storeId) {

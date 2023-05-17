@@ -1,5 +1,6 @@
 package com.augusto.soloveganbusiness.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -8,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -43,9 +45,8 @@ public class Product extends BaseModel {
     @JoinTable(name = "products_has_ingredients", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
     private List<Ingredient> ingredients;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "quantities", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "nutritional_information_id"))
-    private List<NutritionalInformation> nutritionalInformation;
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Quantity> quantities = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "products_has_certificates", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "certificate_id"))
