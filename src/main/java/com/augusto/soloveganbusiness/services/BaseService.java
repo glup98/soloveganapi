@@ -38,6 +38,12 @@ public abstract class BaseService<D extends BaseDto, E> {
         return mapper.toDto(entity);
     }
 
+    public void deleteById(Long id) {
+        Optional<E> optional = baseRepository.findById(id);
+        optional.orElseThrow(() -> new ResourceNotFoundException("Resource not found with id: " + id));
+        baseRepository.deleteById(id);
+    }
+
     public List<D> convertToDtoList(List<E> entityList) {
         return entityList.stream()
                 .map(mapper::toDto)

@@ -4,9 +4,7 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
@@ -23,7 +21,6 @@ public class Category extends BaseModel {
     @NotEmpty(message = "Este campo no puede estar en blanco.")
     private String categoryName;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "categories_has_products", joinColumns = @JoinColumn(name = "category_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private List<Product> products;
 }
