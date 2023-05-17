@@ -15,9 +15,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,6 +74,15 @@ public class ProductController {
         return ResponseEntity.created(location).body(createdProductDto);
     }
 
+    @PutMapping("/products/{productId}/{storeId}")
+    public ResponseEntity<ProductDto> updateProducts(@PathVariable(value = "productId") Long productId,
+            @RequestBody ProductRequestDto productRequestDto,
+            @PathVariable Long storeId) {
+        ProductDto updatedProductDto = productService.updateProduct(productId, productRequestDto, storeId);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
+        return ResponseEntity.created(location).body(updatedProductDto);
+    }
+
     @GetMapping("/products/{productId}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable Long productId) {
         ProductDto productDto = productService.findById(productId);
@@ -92,4 +103,9 @@ public class ProductController {
         return ResponseEntity.ok().body(productDtos);
     }
 
+    @DeleteMapping("/products/{productId}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
+        productService.deleteById(productId);
+        return ResponseEntity.noContent().build();
+    }
 }
